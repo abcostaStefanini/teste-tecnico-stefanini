@@ -1,0 +1,6 @@
+# Local profile overrides (running backend outside Docker, infra via docker-compose)
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/taskdb
+  kafka:
+    bootstrap-servers: localhost:9092
