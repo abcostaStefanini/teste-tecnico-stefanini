@@ -4,9 +4,6 @@ import com.stefanini.taskmanager.domain.Task;
 import com.stefanini.taskmanager.domain.TaskStatus;
 import java.time.OffsetDateTime;
 
-/**
- * Representação de uma tarefa retornada pela API.
- */
 public record TaskResponse(
         Long id,
         String titulo,

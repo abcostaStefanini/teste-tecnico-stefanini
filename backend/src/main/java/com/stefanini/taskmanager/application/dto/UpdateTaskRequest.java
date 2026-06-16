@@ -5,9 +5,6 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
-/**
- * Payload para atualização completa de uma tarefa.
- */
 public record UpdateTaskRequest(
 
         @NotBlank(message = "titulo é obrigatório")

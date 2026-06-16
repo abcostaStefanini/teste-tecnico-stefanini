@@ -4,9 +4,6 @@ import com.stefanini.taskmanager.domain.TaskStatus;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
-/**
- * Payload para criação de uma tarefa.
- */
 public record CreateTaskRequest(
 
         @NotBlank(message = "titulo é obrigatório")

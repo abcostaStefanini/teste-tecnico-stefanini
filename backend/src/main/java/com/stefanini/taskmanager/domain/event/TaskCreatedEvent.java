@@ -4,9 +4,6 @@ import com.stefanini.taskmanager.domain.Task;
 import com.stefanini.taskmanager.domain.TaskStatus;
 import java.time.OffsetDateTime;
 
-/**
- * Evento de domínio disparado quando uma tarefa é criada.
- */
 public record TaskCreatedEvent(
         Long taskId,
         String titulo,

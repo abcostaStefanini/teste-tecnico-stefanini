@@ -16,9 +16,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-/**
- * Entidade de domínio que representa uma tarefa (To-Do).
- */
 @Entity
 @Table(name = "tasks")
 @Getter
