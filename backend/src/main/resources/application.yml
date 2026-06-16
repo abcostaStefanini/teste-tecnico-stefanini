@@ -1,0 +1,46 @@
+spring:
+  application:
+    name: task-manager
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/taskdb}
+    username: ${DB_USERNAME:taskuser}
+    password: ${DB_PASSWORD:taskpass}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+    properties:
+      hibernate:
+        format_sql: true
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+    consumer:
+      group-id: task-manager
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "com.stefanini.taskmanager.*"
+
+app:
+  kafka:
+    topic:
+      task-events: ${KAFKA_TOPIC_TASK_EVENTS:task-events}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: always
+
+server:
+  port: 8080
