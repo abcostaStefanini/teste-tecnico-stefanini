@@ -232,6 +232,44 @@ Workflow em `.github/workflows/ci.yml`, disparado em `push`/`pull_request` para 
 
 ---
 
+## Escalabilidade e evolução
+
+A solução foi estruturada para crescer sem reescrita. Pontos de evolução previstos:
+
+**Escala horizontal do backend**
+- O serviço é **stateless** (sem sessão em memória), então pode rodar em N réplicas atrás de um
+  load balancer. Cada instância participa do mesmo **consumer group** (`task-manager`), e o Kafka
+  distribui as partições do tópico entre elas automaticamente.
+- Aumentar as **partições** do tópico `task-events` (hoje 1) eleva o paralelismo de consumo; como a
+  chave da mensagem é o `taskId`, a ordenação por tarefa é preservada dentro da partição.
+
+**Entrega confiável de eventos**
+- Hoje a publicação ocorre após o commit da transação. Para garantir atomicidade entre persistência
+  e publicação, o próximo passo natural é o **Transactional Outbox** (gravar o evento numa tabela na
+  mesma transação e relayá-lo ao Kafka), evitando perda de evento em falhas.
+- No consumidor, adotar **idempotência** (deduplicação por id do evento) e uma **Dead Letter Queue**
+  para mensagens que falham repetidamente.
+
+**Contrato de eventos**
+- Evoluir do JSON atual para um **Schema Registry** (Avro/Protobuf), versionando o contrato e
+  permitindo evolução compatível entre produtores e consumidores.
+
+**Persistência**
+- Adicionar **paginação e filtros** no `GET /api/tasks` (ex.: `Pageable`) antes que o volume cresça.
+- Escala de leitura via **read replicas** do PostgreSQL; o índice em `status` já antecipa filtros comuns.
+
+**Operação e observabilidade**
+- Logs já são estruturados (JSON); o passo seguinte é exportá-los para um stack centralizado
+  (ELK/Loki) e expor **métricas** via Actuator + Micrometer/Prometheus, com tracing distribuído
+  (OpenTelemetry) cobrindo o fluxo HTTP → Kafka → consumer.
+
+**Arquitetura**
+- A separação em camadas mantém o domínio isolado de framework, viabilizando extrair novos
+  consumidores (notificações, auditoria, projeções CQRS) ou até promover o consumidor a um
+  microsserviço independente sem tocar no caso de uso de escrita.
+
+---
+
 ## Uso de IA neste desafio
 
 Este projeto foi desenvolvido com auxílio do **GitHub Copilot (modelo Claude Opus 4.8)** dentro do
